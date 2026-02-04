@@ -42,7 +42,7 @@
 <!--	========================	========================	========================	-->
 
 	<header>
-		<head_l_logo	i='images/react_sha.png'		u='/'		/>
+		<head_l_logo	i='/images/react_sha.png'		u='/'		/>
 		<site_title		txt='X Tic Tac Toe'				u='/'		/>
 	</header>
 
@@ -56,7 +56,7 @@
 			<i 		tp='ln'			txt='contact us'				u='contact-us'	/>
 		</items>
 		<foot_msg		txt='A simple Tic Tac Toe game demo built with React.js and Node.js.'	/>
-		<foot_r_logo	i='images/K_logo.png'	u='http://www.kisla.com'	t='_blank'		/>
+		<foot_r_logo	i='/images/K_logo.png'	u='http://www.kisla.com'	t='_blank'		/>
 	</footer>
 
 
