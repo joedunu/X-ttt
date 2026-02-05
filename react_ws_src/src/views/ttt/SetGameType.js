@@ -22,6 +22,10 @@ export default class SetGameType extends Component {
 
 				<button type='submit' onClick={this.selTypeComp.bind(this)} className='button long'><span>Against a computer <span className='fa fa-caret-right'></span></span></button>
 
+				<div style={{marginTop: '30px'}}>
+					<button type='button' onClick={this.showLeaderboard.bind(this)} className='button long'><span><span className='fa fa-trophy'></span> View Leaderboard <span className='fa fa-caret-right'></span></span></button>
+				</div>
+
 			</div>
 		)
 	}
@@ -44,6 +48,12 @@ export default class SetGameType extends Component {
 		// onSetType(name.value.trim())
 
 		this.props.onSetType('comp')
+	}
+
+//	------------------------	------------------------	------------------------
+
+	showLeaderboard (e) {
+		this.props.onShowLeaderboard()
 	}
 
 }
