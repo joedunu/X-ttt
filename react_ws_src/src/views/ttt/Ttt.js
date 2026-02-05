@@ -1,8 +1,11 @@
 import React, { Component} from 'react'
 import { Link } from 'react-router'
 
+import { getUser, getOrCreateUser } from '../../helpers/userStorage'
+
 import SetName from './SetName'
 import SetGameType from './SetGameType'
+import Leaderboard from './Leaderboard'
 
 import GameMain from './GameMain'
 
@@ -10,6 +13,15 @@ export default class Ttt extends Component {
 
 	constructor (props) {
 		super(props)
+
+		// Load existing user from localStorage
+		var storedUser = getUser()
+		if (storedUser) {
+			app.settings.curr_user = {
+				name: storedUser.name,
+				odid: storedUser.odid
+			}
+		}
 
 		this.state = {
 			game_step: this.set_game_step()
@@ -38,7 +50,11 @@ export default class Ttt extends Component {
 					}
 
 					{game_step == 'set_game_type' && <SetGameType 
-														onSetType={this.saveGameType.bind(this)} 
+																onSetType={this.saveGameType.bind(this)}
+																onShowLeaderboard={this.showLeaderboard.bind(this)} 
+															/>}
+					{game_step == 'leaderboard' && <Leaderboard 
+																onBack={this.hideLeaderboard.bind(this)} 
 													/>}
 					{game_step == 'start_game' && <GameMain 
 														game_type={this.state.game_type}
@@ -53,8 +69,11 @@ export default class Ttt extends Component {
 //	------------------------	------------------------	------------------------
 
 	saveUserName (n) {
-		app.settings.curr_user = {}
-		app.settings.curr_user.name = n
+		var user = getOrCreateUser(n)
+		app.settings.curr_user = {
+			name: user.name,
+			odid: user.odid
+		}
 
 		this.upd_game_step()
 	}
@@ -73,6 +92,22 @@ export default class Ttt extends Component {
 		this.state.game_type = null
 
 		this.upd_game_step()
+	}
+
+//	------------------------	------------------------	------------------------
+
+	showLeaderboard () {
+		this.setState({
+			game_step: 'leaderboard'
+		})
+	}
+
+//	------------------------	------------------------	------------------------
+
+	hideLeaderboard () {
+		this.setState({
+			game_step: 'set_game_type'
+		})
 	}
 
 //	------------------------	------------------------	------------------------
