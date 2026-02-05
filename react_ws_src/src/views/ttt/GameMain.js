@@ -66,6 +66,20 @@ export default class SetName extends Component {
 
 		}.bind(this));
 
+		this.socket.on('connect_error', function(error) { 
+			this.setState({
+				game_play: false,
+				game_stat: 'Connection failed. Please try again.'
+			});
+		}.bind(this));
+
+		this.socket.on('disconnect', function() { 
+			this.setState({
+				game_play: false,
+				game_stat: 'Disconnected from server'
+			});
+		}.bind(this));
+
 		this.socket.on('pair_players', function(data) { 
 			// console.log('paired with ', data)
 
@@ -77,10 +91,14 @@ export default class SetName extends Component {
 
 		}.bind(this));
 
+		this.socket.on('opp_disconnect', function() { 
+			this.setState({
+				game_play: false,
+				game_stat: 'Opponent disconnected'
+			});
+		}.bind(this));
 
 		this.socket.on('opp_turn', this.turn_opp_live.bind(this));
-
-
 
 	}
 

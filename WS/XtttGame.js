@@ -76,11 +76,25 @@ function onTurn(data) {
 function onClientDisconnect() {
 	// util.log("onClientDisconnect: "+this.id);
 
-
 	var removePlayer = this.player;
-	players.splice(players.indexOf(removePlayer), 1);
-	players_avail.splice(players_avail.indexOf(removePlayer), 1);
 
+	// Guard clause: player may not exist if disconnect happens before 'new player' event
+	if (!removePlayer) {
+		util.log("Unknown client disconnected: "+this.id);
+		return;
+	}
+
+	// Notify opponent if paired
+	if (removePlayer.opp && removePlayer.opp.sockid) {
+		io.to(removePlayer.opp.sockid).emit("opp_disconnect");
+	}
+
+	// Safely remove from arrays (check indexOf > -1 to avoid removing wrong player)
+	var playerIdx = players.indexOf(removePlayer);
+	if (playerIdx > -1) players.splice(playerIdx, 1);
+
+	var availIdx = players_avail.indexOf(removePlayer);
+	if (availIdx > -1) players_avail.splice(availIdx, 1);
 
 	if (this.status == "admin") {
 		util.log("Admin has disconnected: "+this.uid);
