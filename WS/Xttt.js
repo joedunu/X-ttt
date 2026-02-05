@@ -18,6 +18,13 @@ players_avail = [];
 // Routing
 app.use(express.static(__dirname + '/public'));
 
+// CORS middleware for API routes
+app.use('/api', function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
+});
+
 // API: Get leaderboard
 app.get('/api/leaderboard', function(req, res) {
 	var limit = parseInt(req.query.limit, 10) || 10;
