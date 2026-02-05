@@ -1,11 +1,17 @@
 import React, {Component} from 'react'
 
+import { getUser } from '../../helpers/userStorage'
+
 export default class SetName extends Component {
 
 	constructor (props) {
 		super(props)
 
-		this.state = {}
+		// Check for returning user
+		var storedUser = getUser()
+		this.state = {
+			initialName: storedUser ? storedUser.name : ''
+		}
 	}
 
 //	------------------------	------------------------	------------------------
@@ -18,7 +24,7 @@ export default class SetName extends Component {
 
 				<div ref='nameHolder' className='input_holder left'>
 					<label>Name </label>
-					<input ref='name' type='text' className='input name' placeholder='Name' />
+					<input ref='name' type='text' className='input name' placeholder='Name' defaultValue={this.state.initialName} />
 				</div>
 
 
