@@ -107,6 +107,15 @@ export default class SetName extends Component {
 
 	componentWillUnmount () {
 
+		TweenMax.killTweensOf('#game_stat');
+		TweenMax.killTweensOf('#game_board');
+		TweenMax.killTweensOf('td.win');
+		for (let i = 1; i <= 9; i++) {
+			if (this.refs['c' + i]) {
+				TweenMax.killTweensOf(this.refs['c' + i]);
+			}
+		}
+
 		this.socket && this.socket.disconnect();
 	}
 
