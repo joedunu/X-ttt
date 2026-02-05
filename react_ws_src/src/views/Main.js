@@ -6,11 +6,11 @@ import Footer from './layouts/Footer'
 export default class Main extends Component {
 
 	render () {
-		const { popup, mainContent } = this.props
+		const { popup, mainContent, location } = this.props
 		return (
 			<div style={fullHeight}>
 				<Header/>
-				<MainContent>
+				<MainContent key={location.pathname}>
 					{ mainContent }
 				</MainContent>
 				<Footer />
