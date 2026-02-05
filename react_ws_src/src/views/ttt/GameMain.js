@@ -62,7 +62,10 @@ export default class SetName extends Component {
 		this.socket.on('connect', function(data) { 
 			// console.log('socket connected', data)
 
-			this.socket.emit('new player', { name: app.settings.curr_user.name });
+			this.socket.emit('new player', { 
+				name: app.settings.curr_user.name,
+				odid: app.settings.curr_user.odid 
+			});
 
 		}.bind(this));
 
@@ -99,6 +102,8 @@ export default class SetName extends Component {
 		}.bind(this));
 
 		this.socket.on('opp_turn', this.turn_opp_live.bind(this));
+
+		this.socket.on('game_result', this.handleGameResult.bind(this));
 
 	}
 
@@ -322,6 +327,15 @@ export default class SetName extends Component {
 
 		// win && console.log('win set: ', set)
 
+		// For live games, let server handle game result via game_result event
+		if (this.props.game_type === 'live') {
+			this.setState({
+				next_turn_ply: !this.state.next_turn_ply
+			})
+			return
+		}
+
+		// For comp games, handle win/draw client-side
 		if (win) {
 		
 			this.refs[set[0]].classList.add('win')
@@ -336,8 +350,6 @@ export default class SetName extends Component {
 				game_play: false
 			})
 
-			this.socket && this.socket.disconnect();
-
 		} else if (fin) {
 		
 			this.setState({
@@ -345,16 +357,52 @@ export default class SetName extends Component {
 				game_play: false
 			})
 
-			this.socket && this.socket.disconnect();
-
 		} else {
-			this.props.game_type!='live' && this.state.next_turn_ply && setTimeout(this.turn_comp.bind(this), rand_to_fro(500, 1000));
+			this.state.next_turn_ply && setTimeout(this.turn_comp.bind(this), rand_to_fro(500, 1000));
 
 			this.setState({
 				next_turn_ply: !this.state.next_turn_ply
 			})
 		}
 		
+	}
+
+//	------------------------	------------------------	------------------------
+
+	handleGameResult (data) {
+		// Server-authoritative game result for live games
+		const { outcome, winSet } = data;
+
+		if (winSet) {
+			this.refs[winSet[0]].classList.add('win')
+			this.refs[winSet[1]].classList.add('win')
+			this.refs[winSet[2]].classList.add('win')
+
+			TweenMax.killAll(true)
+			TweenMax.from('td.win', 1, {opacity: 0, ease: Linear.easeIn})
+		}
+
+		let statusMsg;
+		switch (outcome) {
+			case 'win':
+				statusMsg = 'You win!';
+				break;
+			case 'loss':
+				statusMsg = 'Opponent wins';
+				break;
+			case 'draw':
+				statusMsg = 'Draw';
+				break;
+			default:
+				statusMsg = 'Game Over';
+		}
+
+		this.setState({
+			game_stat: statusMsg,
+			game_play: false
+		});
+
+		this.socket && this.socket.disconnect();
 	}
 
 //	------------------------	------------------------	------------------------
