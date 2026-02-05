@@ -17,6 +17,7 @@ players_avail = [];
 
 // Routing
 app.use(express.static(__dirname + '/public'));
+app.use(express.json()); // Parse JSON bodies
 
 // CORS middleware for API routes
 app.use('/api', function(req, res, next) {
@@ -30,6 +31,16 @@ app.get('/api/leaderboard', function(req, res) {
 	var limit = parseInt(req.query.limit, 10) || 10;
 	var topPlayers = Leaderboard.getTopPlayers(limit);
 	res.json(topPlayers);
+});
+
+// API: Record game result
+app.post('/api/leaderboard', function(req, res) {
+	var { odid, name, outcome } = req.body;
+	if (!odid || !name || !outcome) {
+		return res.status(400).json({ error: 'Missing required fields: odid, name, outcome' });
+	}
+	Leaderboard.recordResult(odid, name, outcome);
+	res.json({ success: true });
 });
 
 var port = process.env.PORT || 3001;

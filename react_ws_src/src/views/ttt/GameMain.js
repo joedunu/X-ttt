@@ -345,6 +345,9 @@ export default class SetName extends Component {
 			TweenMax.killAll(true)
 			TweenMax.from('td.win', 1, {opacity: 0, ease: Linear.easeIn})
 
+			let outcome = cell_vals[set[0]]=='x' ? 'win' : 'loss';
+			this.recordResult(outcome);
+
 			this.setState({
 				game_stat: (cell_vals[set[0]]=='x'?'You':'Opponent')+' win',
 				game_play: false
@@ -352,6 +355,8 @@ export default class SetName extends Component {
 
 		} else if (fin) {
 		
+			this.recordResult('draw');
+
 			this.setState({
 				game_stat: 'Draw',
 				game_play: false
@@ -403,6 +408,23 @@ export default class SetName extends Component {
 		});
 
 		this.socket && this.socket.disconnect();
+	}
+
+//	------------------------	------------------------	------------------------
+
+	recordResult (outcome) {
+		const apiUrl = app.settings.ws_conf.loc.SOCKET__io.u + '/api/leaderboard';
+		fetch(apiUrl, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				odid: app.settings.curr_user.odid,
+				name: app.settings.curr_user.name,
+				outcome: outcome
+			})
+		}).catch(err => console.error('Failed to record result:', err));
 	}
 
 //	------------------------	------------------------	------------------------
